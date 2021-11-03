@@ -9,3 +9,6 @@ dependencies:
   - matplotlib 
   - sympy
   - numpy
+  - pip:
+    - ttkbootstrap
+    - pillow
