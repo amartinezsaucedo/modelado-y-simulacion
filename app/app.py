@@ -7,11 +7,11 @@ import numpy as np
 import matplotlib as mpl
 mpl.use("TkAgg")
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
-from utils.methods import calculate
+from utils.methods import calculate, calculate_h
 
 class CustomToolbar(NavigationToolbar2Tk):
     def __init__(self,canvas_,parent_):
-        self.toolitems = (
+        '''self.toolitems = (
             ('Home', 'Reestablecer gráfico', 'home', 'home'),
             ('Back', 'Mostrar gráfico anterior', 'back', 'back'),
             ('Forward', 'Mostrar siguiente gráfico', 'forward', 'forward'),
@@ -21,7 +21,7 @@ class CustomToolbar(NavigationToolbar2Tk):
             (None, None, None, None),
             ('Subplots', 'putamus parum claram', 'Configurar gráfico', 'configure_subplots'),
             ('Save', 'sollemnes in futurum', 'Guardar gráfico', 'save_figure'),
-            )
+            )'''
         NavigationToolbar2Tk.__init__(self,canvas_,parent_, pack_toolbar=False)
 
 class App:
@@ -58,7 +58,18 @@ class App:
         Button(self.frame, text="Calcular", command=self.calculate, width=50).grid(pady=2, padx=5, row=7, column=0, columnspan=2)
         
     def calculate(self):
-        calculate(self.function_input.get(), "euler")
+        f = self.function_input.get()
+        t0 = float(self.t0_input.get())
+        x0 = float(self.x0_input.get())
+        tf = float(self.tf_input.get())
+        n = float(self.n_input.get())
+        h = self.h_input.get()
+        if not h:
+            h = calculate_h(tf, t0, n)
+        else:
+            h = float(h)
+        f, x, t, y_true = calculate(f, x0, h , "euler")
+        self.plot(t, x, y_true)
 
     def draw_graph(self):
         graph_frame = Frame(self.frame)
@@ -74,15 +85,24 @@ class App:
         self.canvas.draw()
 
     # plot something random
-    def plot(self):
+    def plot(self, t, x, y_true):
+        self.ax.clear()
+        self.ax.plot(t, x, 'bo--', label='Approximate')
+        self.ax.plot(t, y_true, 'g', label='Exact')
+        '''self.ax.plot(t, f(t ), 'g', label='Exact')
+        self.ax.title('Approximate and Exact Solution for Simple ODE')
+        self.ax.xlabel('t')
+        self.ax.ylabel('f(t)')
+        self.ax.grid()
+        self.ax.legend(loc='lower right')
+        self.ax.show()'''
         self.figure.canvas.draw()
 
 def main():
     style = Style(theme="minty")
     style.configure('TLabel', font=('Helvetica', 12))
     root = style.master
-    app = App(root)
-    app.plot()
+    App(root)
     root.mainloop()
 
 if __name__ == "__main__":
