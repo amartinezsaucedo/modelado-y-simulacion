@@ -1,15 +1,12 @@
-import tkinter as tk
-from tkinter import Tk, Text, TOP, BOTH, X, N, LEFT
-from tkinter.constants import BOTTOM, CENTER, RIGHT
+from tkinter import BOTH
 from tkinter.ttk import Frame, Label, Entry, Button
 from ttkbootstrap import Style
-import numpy as np
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from utils.methods import calculate, calculate_h
 
 mpl.use("TkAgg")
-
 
 class CustomToolbar(NavigationToolbar2Tk):
     def __init__(self, canvas_, parent_):
@@ -102,24 +99,36 @@ class App:
             row=1, column=0, sticky="nsew"
         )
         self.toolbar.grid(row=0, column=0)
+        self.configure_plot()
         self.canvas.draw()
+
+    def configure_plot(self):
+        self.ax.grid(alpha=0.01)
+        self.ax.set_xlabel("t")
+        self.ax.set_ylabel("f(x, t)")
+        self.ax.xaxis.label.set_color("#5a5a5a")
+        self.ax.yaxis.label.set_color("#5a5a5a")
+        [t.set_color("#5a5a5a") for t in self.ax.xaxis.get_ticklines()]
+        [t.set_color("#5a5a5a") for t in self.ax.xaxis.get_ticklabels()]
+        [t.set_color("#5a5a5a") for t in self.ax.yaxis.get_ticklines()]
+        [t.set_color("#5a5a5a") for t in self.ax.yaxis.get_ticklabels()]
 
     def plot(self, t, x_euler, x_improved_euler, x_runge_kutta, exact):
         self.ax.clear()
-        self.ax.plot(t, x_euler, "bo--", label="Euler")
-        self.ax.plot(t, x_improved_euler, "ro--", label="Euler mejorado (O(h^2))")
-        self.ax.plot(t, x_runge_kutta, "yo--", label="Runge-Kutta (O(h^4))")
-        self.ax.plot(t, exact, "g", label="Exacta")
-        self.ax.set_xlabel("t")
-        self.ax.set_ylabel("f(x, t)")
-        self.ax.grid()
-        self.ax.legend(loc="lower right")
+        self.configure_plot()
+        self.ax.plot(t, x_euler, color="#f3969a", linestyle='--', label="Euler")
+        self.ax.plot(t, x_improved_euler, "#6cc3d5", linestyle='--', label="Euler mejorado (O(h^2))")
+        self.ax.plot(t, x_runge_kutta, "#ffce67",  linestyle='--',label="Runge-Kutta (O(h^4))")
+        self.ax.plot(t, exact, "#ff7851", label="Exacta")
+        self.ax.legend(loc="best")
         self.figure.canvas.draw()
 
 
 def main():
     style = Style(theme="minty")
     style.configure("TLabel", font=("Helvetica", 12))
+    plt.rc("font", size= 10)
+    plt.style.use('seaborn')
     root = style.master
     App(root)
     root.mainloop()
