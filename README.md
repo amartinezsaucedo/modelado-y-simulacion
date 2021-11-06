@@ -1,6 +1,6 @@
 # TPO Modelado y Simulación - Martínez Saucedo, Ana
 
-## Instrucciones
+## Instrucciones (modo desarrollo)
 
 ```bash
 conda env create -f environment.yml
