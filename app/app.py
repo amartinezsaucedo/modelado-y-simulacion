@@ -8,6 +8,7 @@ from utils.methods import calculate, calculate_h
 
 mpl.use("TkAgg")
 
+
 class CustomToolbar(NavigationToolbar2Tk):
     def __init__(self, canvas_, parent_):
         """self.toolitems = (
@@ -89,18 +90,70 @@ class App:
     def draw_graph(self):
         graph_frame = Frame(self.frame)
         graph_frame.grid(row=1, column=2, rowspan=7)
-        graph_frame.columnconfigure(0, weight=1)
+        graph_frame.rowconfigure(2, weight=1)
         self.figure = mpl.figure.Figure()
         self.ax = self.figure.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.figure, graph_frame)
         self.toolbar = CustomToolbar(self.canvas, graph_frame)
         self.toolbar.update()
-        self.plot_widget = self.canvas.get_tk_widget().grid(
-            row=1, column=0, sticky="nsew"
+        self.euler_button = Button(
+            graph_frame,
+            style="secondary.TButton",
+            text="Euler",
+            command=lambda: self.change_line_status("euler"),
+            width=10,
         )
-        self.toolbar.grid(row=0, column=0)
+        self.euler_button.grid(pady=5, padx=5, row=1, column=0, sticky="nsew")
+        self.improved_euler_button = Button(
+            graph_frame,
+            style="info.TButton",
+            text="Euler mejorado",
+            command=lambda: self.change_line_status("improved_euler"),
+            width=10,
+        )
+        self.improved_euler_button.grid(pady=5, padx=5, row=1, column=1, sticky="nsew")
+        self.runge_kutta_button = Button(
+            graph_frame,
+            text="Runge Kutta",
+            style="danger.TButton",
+            command=lambda: self.change_line_status("runge_kutta"),
+            width=10,
+        )
+        self.runge_kutta_button.grid(pady=5, padx=5, row=1, column=2, sticky="nsew")
+        self.exact_button = Button(
+            graph_frame,
+            text="Exacta",
+            style="success.TButton",
+            command=lambda: self.change_line_status("exact"),
+            width=10,
+        )
+        self.exact_button.grid(pady=5, padx=5, row=1, column=3, sticky="nsew")
+        self.plot_widget = self.canvas.get_tk_widget().grid(
+            row=2, column=0, sticky="nsew", columnspan=4
+        )
+        self.toolbar.grid(row=0, column=0, columnspan=4)
         self.configure_plot()
         self.canvas.draw()
+
+    def change_line_status(self, method):
+        line = getattr(self, method + "_line", None)
+        button = getattr(self, method + "_button", None)
+        if line:
+            linestyle = line[0]._linestyle
+            button_style = button.cget("style")
+            if linestyle != "None":
+                line[0]._linestyle = "None"
+                index = button_style.find(".")
+                style = button_style[:index] + ".Outline" + button_style[index:]
+                button.configure(style=style)
+            else:
+                style = (
+                    button_style[: button_style.find(".")]
+                    + button_style[button_style.rfind(".") :]
+                )
+                button.configure(style=style)
+                line[0]._linestyle = "--" if not method == "exacta" else "-"
+        self.figure.canvas.draw()
 
     def configure_plot(self):
         self.ax.grid(alpha=0.01)
@@ -116,10 +169,20 @@ class App:
     def plot(self, t, x_euler, x_improved_euler, x_runge_kutta, exact):
         self.ax.clear()
         self.configure_plot()
-        self.ax.plot(t, x_euler, color="#f3969a", linestyle='--', label="Euler")
-        self.ax.plot(t, x_improved_euler, "#6cc3d5", linestyle='--', label="Euler mejorado (O(h^2))")
-        self.ax.plot(t, x_runge_kutta, "#ffce67",  linestyle='--',label="Runge-Kutta (O(h^4))")
-        self.ax.plot(t, exact, "#ff7851", label="Exacta")
+        self.euler_line = self.ax.plot(
+            t, x_euler, color="#f3969a", linestyle="--", label="Euler"
+        )
+        self.improved_euler_line = self.ax.plot(
+            t,
+            x_improved_euler,
+            "#6cc3d5",
+            linestyle="--",
+            label="Euler mejorado (O(h^2))",
+        )
+        self.runge_kutta_line = self.ax.plot(
+            t, x_runge_kutta, "#ff7851", linestyle="--", label="Runge-Kutta (O(h^4))"
+        )
+        self.exact_line = self.ax.plot(t, exact, "#56cc9d", label="Exacta")
         self.ax.legend(loc="best")
         self.figure.canvas.draw()
 
@@ -127,8 +190,8 @@ class App:
 def main():
     style = Style(theme="minty")
     style.configure("TLabel", font=("Helvetica", 12))
-    plt.rc("font", size= 10)
-    plt.style.use('seaborn')
+    plt.rc("font", size=10)
+    plt.style.use("seaborn")
     root = style.master
     App(root)
     root.mainloop()
