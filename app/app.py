@@ -1,4 +1,4 @@
-from tkinter import BOTH
+from tkinter import BOTH, TOP
 from tkinter.ttk import Frame, Label, Entry, Button
 from ttkbootstrap import Style
 import matplotlib as mpl
@@ -11,17 +11,17 @@ mpl.use("TkAgg")
 
 class CustomToolbar(NavigationToolbar2Tk):
     def __init__(self, canvas_, parent_):
-        """self.toolitems = (
-        ('Home', 'Reestablecer gráfico', 'home', 'home'),
-        ('Back', 'Mostrar gráfico anterior', 'back', 'back'),
-        ('Forward', 'Mostrar siguiente gráfico', 'forward', 'forward'),
-        (None, None, None, None),
-        ('Pan', 'Mover gráfico', 'move', 'pan'),
-        ('Zoom', 'dolore magna aliquam', 'Zoom en área', 'zoom'),
-        (None, None, None, None),
-        ('Subplots', 'putamus parum claram', 'Configurar gráfico', 'configure_subplots'),
-        ('Save', 'sollemnes in futurum', 'Guardar gráfico', 'save_figure'),
-        )"""
+        self.toolitems = (
+            ("Home", "Reestablecer gráfico", "home", "home"),
+            (None, None, None, None),
+            ("Pan", "Mover gráfico", "move", "pan"),
+            (None, None, None, None),
+            ("Zoom", "Zoom en área", "zoom_to_rect", "zoom"),
+            (None, None, None, None),
+            ("Subplots", "Configurar gráfico", "subplots", "configure_subplots"),
+            (None, None, None, None),
+            ("Save", "Guardar gráfico", "filesave", "save_figure"),
+        )
         NavigationToolbar2Tk.__init__(self, canvas_, parent_, pack_toolbar=False)
 
 
@@ -86,6 +86,7 @@ class App:
             h = float(h)
         t, x_euler, x_improved_euler, x_runge_kutta, exact = calculate(f, t0, tf, x0, h)
         self.plot(t, x_euler, x_improved_euler, x_runge_kutta, exact)
+        self.reset_buttons()
 
     def draw_graph(self):
         graph_frame = Frame(self.frame)
@@ -95,6 +96,9 @@ class App:
         self.ax = self.figure.add_subplot(111)
         self.canvas = FigureCanvasTkAgg(self.figure, graph_frame)
         self.toolbar = CustomToolbar(self.canvas, graph_frame)
+        self.toolbar._message_label.config(font=("Helvetica", 16), fg="#5a5a5a")
+        for button in self.toolbar.winfo_children():
+            button.config(background="white")
         self.toolbar.update()
         self.euler_button = Button(
             graph_frame,
@@ -131,7 +135,7 @@ class App:
         self.plot_widget = self.canvas.get_tk_widget().grid(
             row=2, column=0, sticky="nsew", columnspan=4
         )
-        self.toolbar.grid(row=0, column=0, columnspan=4)
+        self.toolbar.grid(row=0, column=0, sticky="nsew", columnspan=4)
         self.configure_plot()
         self.canvas.draw()
 
@@ -154,6 +158,12 @@ class App:
                 button.configure(style=style)
                 line[0]._linestyle = "--" if not method == "exacta" else "-"
         self.figure.canvas.draw()
+
+    def reset_buttons(self):
+        self.euler_button.configure(style="secondary.TButton")
+        self.improved_euler_button.configure(style="info.TButton")
+        self.runge_kutta_button.configure(style="danger.TButton")
+        self.exact_button.configure(style="success.TButton")
 
     def configure_plot(self):
         self.ax.grid(alpha=0.01)
