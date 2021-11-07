@@ -1,4 +1,4 @@
-from tkinter import BOTH, TOP
+from tkinter import BOTH, Toplevel
 from tkinter.ttk import Frame, Label, Entry, Button
 from ttkbootstrap import Style
 import matplotlib as mpl
@@ -46,6 +46,7 @@ class App:
         )
         self.function_input = Entry(self.frame, width=50)
         self.function_input.grid(pady=2, row=1, column=1)
+        self.function_input.insert(0, "t-x")
         Label(self.frame, text="t0", style="primary.TLabel").grid(row=2, column=0)
         self.t0_input = Entry(self.frame, width=50)
         self.t0_input.grid(pady=2, row=2, column=1)
@@ -66,6 +67,20 @@ class App:
         self.n_input.grid(pady=2, row=5, column=1)
         Button(self.frame, text="Calcular", command=self.calculate, width=50).grid(
             pady=2, padx=5, row=6, column=0, columnspan=2
+        )
+
+    def help_popup(self):
+        help_window = Toplevel()
+        help_window.wm_title("Ayuda")
+        Label(
+            help_window, font=("Helvetica", 16, "bold"), text="Operadores y funciones"
+        ).grid(row=0, column=0, padx=20, pady=20)
+        Label(
+            help_window,
+            text="Suma: +\nResta: -\nMultiplicación: *\nDivisión: /\nExponencial: **\nRaíz cuadrada: sqrt(x)\nSeno: sin(x)\nArco seno: asin(x)\nArco coseno: acos(x)\nArco tangente: atan(x)\nLogaritmo natural: log(x)",
+        ).grid(row=1, column=0, sticky="w", padx=5)
+        Button(help_window, text="Listo", command=help_window.destroy).grid(
+            row=2, column=0, padx=20, pady=20
         )
 
     def calculate(self):
@@ -127,6 +142,13 @@ class App:
             row=2, column=0, sticky="nsew", columnspan=4
         )
         self.toolbar.grid(row=0, column=0, sticky="nsew", columnspan=4)
+        Button(
+            graph_frame,
+            style="warning.Outline.TButton",
+            text="Ayuda",
+            command=self.help_popup,
+            width=6,
+        ).grid(row=0, column=1, sticky="w")
         self.configure_plot()
         self.canvas.draw()
 
@@ -195,6 +217,7 @@ def main():
     plt.style.use("seaborn")
     root = style.master
     App(root)
+    root.state("zoomed")
     root.mainloop()
 
 
