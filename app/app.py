@@ -59,18 +59,13 @@ class App:
         )
         self.tf_input = Entry(self.frame, width=50)
         self.tf_input.grid(pady=2, row=4, column=1)
-        Label(self.frame, text="h", style="primary.TLabel").grid(
+        Label(self.frame, text="N", style="primary.TLabel").grid(
             row=5, column=0, sticky="nsew"
         )
-        self.h_input = Entry(self.frame, width=50)
-        self.h_input.grid(pady=2, row=5, column=1)
-        Label(self.frame, text="N", style="primary.TLabel").grid(
-            row=6, column=0, sticky="nsew"
-        )
         self.n_input = Entry(self.frame, width=50)
-        self.n_input.grid(pady=2, row=6, column=1)
+        self.n_input.grid(pady=2, row=5, column=1)
         Button(self.frame, text="Calcular", command=self.calculate, width=50).grid(
-            pady=2, padx=5, row=7, column=0, columnspan=2
+            pady=2, padx=5, row=6, column=0, columnspan=2
         )
 
     def calculate(self):
@@ -79,18 +74,14 @@ class App:
         x0 = float(self.x0_input.get())
         tf = float(self.tf_input.get())
         n = float(self.n_input.get())
-        h = self.h_input.get()
-        if not h:
-            h = calculate_h(tf, t0, n)
-        else:
-            h = float(h)
+        h = calculate_h(tf, t0, n)
         t, x_euler, x_improved_euler, x_runge_kutta, exact = calculate(f, t0, tf, x0, h)
         self.plot(t, x_euler, x_improved_euler, x_runge_kutta, exact)
         self.reset_buttons()
 
     def draw_graph(self):
         graph_frame = Frame(self.frame)
-        graph_frame.grid(row=1, column=2, rowspan=7)
+        graph_frame.grid(row=1, column=2, rowspan=6)
         graph_frame.rowconfigure(2, weight=1)
         self.figure = mpl.figure.Figure()
         self.ax = self.figure.add_subplot(111)
@@ -180,7 +171,7 @@ class App:
         self.ax.clear()
         self.configure_plot()
         self.euler_line = self.ax.plot(
-            t, x_euler, color="#f3969a", linestyle="--", label="Euler"
+            t, x_euler, color="#f3969a", linestyle="--", label="Euler (O(h))"
         )
         self.improved_euler_line = self.ax.plot(
             t,
