@@ -5,7 +5,7 @@ Para trabajar con el proyecto en modo desarrollo, ejecutar los siguientes comand
 ```bash
 conda env create -f environment.yml
 ```
-Este comando desacargá las dependencias necesarias en un entorno virtual. Para activar el nuevo entorno (`mys`) ejecutar el comando
+Este comando descargará las dependencias necesarias en un entorno virtual. Para activar el nuevo entorno (`mys`) ejecutar el comando
 ```bash
 conda activate mys
 ```
