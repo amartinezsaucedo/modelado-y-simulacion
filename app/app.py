@@ -205,7 +205,7 @@ class App:
         self.runge_kutta_line = self.ax.plot(
             t, x_runge_kutta, "#ff7851", linestyle="--", label="Runge-Kutta (O(h^4))"
         )
-        self.exact_line = self.ax.plot(t, exact, "#56cc9d", label="Exacta")
+        self.exact_line = self.ax.plot(t, exact, "#56cc9d", label="Exacta (DOP853)")
         self.ax.legend(loc="best")
         self.figure.canvas.draw()
 
