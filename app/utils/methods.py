@@ -10,7 +10,7 @@ def calculate(expression, t0, tf, x0, h):
     x_euler = euler(f, t_input, x0, h)
     x_improved_euler = improved_euler(f, t_input, x0, h)
     x_runge_kutta = runge_kutta(f, t_input, x0, h)
-    exact = solve_ivp(f, [t0, np.max(t_input)],[x0], t_eval=t_input,method= "DOP853")
+    exact = solve_ivp(f, [t0, np.max(t_input)], [x0], t_eval=t_input, method="DOP853")
     return t_input, x_euler, x_improved_euler, x_runge_kutta, exact.y[0]
 
 
